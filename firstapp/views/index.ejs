@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<script type="text/javascript">
+   
+       function setInput(button) {
+           
+          button.style.visibility = "hidden";
+       }
+</script>
+   
+
+<body>
+    <h1>THE APP </h1>
+    
+    <% if (!spotify) { %>
+
+            <a href="/loginSpotify">
+                <button id="login1" >Spotify Login</button>
+            </a>
+    <% } %>  
+    <% if (!youtube) { %>
+
+        <a href="/loginYoutube">
+            <button id="login2"> Youtube Login </button>
+        </a>
+    <% } %>  
+    <% if (!apple) { %>
+
+        <a href="/loginApple">
+            <button id="login3"> Apple Login </button>
+        </a>
+    <% } %>  
+
+    <% if (atleastonelogin) { %>
+
+        <a href="/getPlaylist">
+            <button id="login4"> Click Me to Generate new recommended playlist </button>
+        </a>
+    <% } %> 
+</body>
+</html>

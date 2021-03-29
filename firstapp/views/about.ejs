@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+</head>
+<body>
+    <h1> User's Playlists</h1>
+    <h2>Choose a Playlist</h2>
+        <% for (var i = 0; i < text.length; i++) { %>
+            <a href="/getPlaylistInfo/<%= text[i].id %>">
+            <button>
+            <%= text[i].title %>
+            <%= text[i].id %>
+            </button>
+            </a>
+        <%}%>
+
+</body>
+</html>
