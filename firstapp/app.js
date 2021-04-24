@@ -5,7 +5,6 @@ const app = express();
 
 
 
-
 const PORT = process.env.PORT || 8888;
 //Set Views
 app.set('views', './views');
@@ -15,6 +14,9 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use('/css', express.static(__dirname + 'public/css'));
 app.use('/js', express.static(__dirname + 'public/js'));
+app.use(express.urlencoded({
+    extended: true
+}))
 
 //router
 app.use('/', indexRouter);
@@ -31,6 +33,8 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-
+app.post('/newPlaylist', (req, res) => {
+    res.send('You sent the following artists: ' + req.body.artist1 + ", " + req.body.artist2 + ", " + req.body.artist3 + ", " + req.body.artist4 + ", " + req.body.artist5);
+})
 
 app.listen(PORT,() => console.log(`Server started on port ${PORT}`));

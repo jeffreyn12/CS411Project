@@ -196,6 +196,39 @@ router.get('/spotifyrecfromtrack', (req, res) => {
   });
 });
 
+router.get('/loginYoutube', (req, res) => {
+  youtube=true; // replace with actual login thing later
+  res.render('index', {
+    youtube, 
+    spotify, 
+    apple, 
+  atleastonelogin});
+});
+
+router.get('/getArtists', async(req, res) => {
+  res.redirect('http://localhost:8888/artists')
+})
+
+router.get('/artists', async(req, res) => {
+  res.render('artists');
+})
+
+// router.get('/newPlaylist', async(req, res) => {
+
+// })
+
+// router.get('/loginSpotify', (req,res) => {
+//   var state = generateRandomString(16);
+//   res.redirect('https://accounts.spotify.com/authorize?' +
+//   querystring.stringify({
+//     response_type: 'code',
+//     client_id: client_id,
+//     scope: scopes,
+//     redirect_uri: redirect_uri,
+//     state: state
+//   }));
+// });
+
 // router.get('/getNewPlaylist', async (req,res) => {
 
 //   var options = {
