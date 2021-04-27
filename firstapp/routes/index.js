@@ -5,11 +5,20 @@ var querystring = require('querystring');
 scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private';
 
 
+
+//youtube API Stuff
+var yClientID = '';
+var OAUTH2_SCOPES = ['https://www.googleapis.com/auth/youtube'];
+var scopes = 'https://www.googleapis.com/auth/youtube';
+// const authorizeButton = document.getElementById('login2');
+
+
 var client_id = ''; // Your client id
 var client_secret = ''; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
 var stateKey = 'spotify_auth_state';
+
 
 var youtube = false; 
 var spotify =false;
@@ -197,7 +206,8 @@ router.get('/spotifyrecfromtrack', (req, res) => {
 });
 
 router.get('/loginYoutube', (req, res) => {
-  youtube=true; // replace with actual login thing later
+  // handleClientLoad();
+  youtube= true; //replace with login redirect or w/e
   res.render('index', {
     youtube, 
     spotify, 
@@ -205,6 +215,38 @@ router.get('/loginYoutube', (req, res) => {
   atleastonelogin});
 });
 
+function handleClientLoad() {
+    gapi.load('client:auth2', initClient);
+}
+
+function initClient(){
+    const discoveryUrl = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
+    gapi.client.init({
+        discoveryDocs: discoveryUrl,
+        clientID: yClientID,
+        scope: scopes
+    }).then(() => {
+        //Listen or sign in state change
+        gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+        // Handle init sign in state
+        updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+        authorizeButton.onclick = handleAuthClick;
+    })
+}
+
+//Check to see if signed in
+function updateSigninStatus(isSignedIn){
+    if(isSignedIn){
+        authorizeButton.style.display = 'none';
+    } else {
+        authorizeButton.style.display = 'block';
+    }
+}
+
+//Handle login
+function handleAuthClick(){
+    gapi.auth2.getAuthInstance().signIn();
+}
 router.get('/getArtists', async(req, res) => {
   res.redirect('http://localhost:8888/artists')
 })
