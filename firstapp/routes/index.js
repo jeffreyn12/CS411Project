@@ -2,11 +2,19 @@ const express = require('express');
 const router = express.Router();
 var request = require('request');
 var querystring = require('querystring');
+const { google, GoogleApis } = require('googleapis');
+const cors = require("cors");
+const urlParse = require("url-parse");
+const queryParse = require("query-string");
+const bodyParser = require("body-parser");
+const axios = require("axios");
 scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private';
 
+var myCode = ""; // google return url thing
+var googleAPIKey = '' //your google api key
 
-var client_id = ''; // Your client id
-var client_secret = ''; // Your secret
+var client_id = "701543701254-18brjpn5lc3mr8m8hmtr8ql8fkcl9p3a.apps.googleusercontent.com"; // Your client id
+var client_secret = "zUnUpV1D9fN9fpPh52_yCTBY"; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
 var stateKey = 'spotify_auth_state';
@@ -197,20 +205,65 @@ router.get('/spotifyrecfromtrack', (req, res) => {
 });
 
 router.get('/loginYoutube', (req, res) => {
-  youtube=true; // replace with actual login thing later
-  res.render('index', {
-    youtube, 
-    spotify, 
-    apple, 
-  atleastonelogin});
+  const oauth2Client = new google.auth.OAuth2(
+    //client id
+    client_id,
+    //client secret
+    client_secret,
+    //link to redirect to
+    "http://localhost:8888/artists"
+  )
+  const googleScopes = [ "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/youtube"]
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: googleScopes,
+    state: JSON.stringify({
+      callbackUrl: req.body.callbackUrl,
+      userID: req.body.userid
+    })
+  })
+
+  request(url, (err, response, body) => {
+    console.log("error: ", err);
+    console.log("statusCode: ", response && response.statusCode);
+    res.redirect(url);
+  })
+  //youtube=true; // replace with actual login thing later
+  // res.render('index', {
+  //   youtube, 
+  //   spotify, 
+  //   apple, 
+  // atleastonelogin});
 });
 
-router.get('/getArtists', async(req, res) => {
-  res.redirect('http://localhost:8888/artists')
+// router.get('/getArtists', async(req, res) => {
+//   res.redirect('http://localhost:8888/artists')
+// })
+
+router.get('/artists', async (req, res) => {
+  const theURL = new urlParse(req.url);
+  const code = queryParse.parse(theURL.query).code;
+  myCode = code;
+
+  res.render('artists');
 })
 
-router.get('/artists', async(req, res) => {
-  res.render('artists');
+router.post('/newPlaylist', async (req, res) => {
+  console.log(req.body.artist1);
+  const oauth2Client = new google.auth.OAuth2(
+    //client id
+    client_id,
+    //client secret
+    client_secret,
+    //link to redirect to
+    "http://localhost:8888/artists"
+  )
+  //const tokens = await oauth2Client.getToken(myCode); // the token we need is tokens.tokens.access_token. Use it in header like headers: { authorization: "Bearer " + tokens.tokens.access_token}
+  // console.log(tokens);
+  res.render('newPlaylist');
+  //create function that takes user inputs and calls google api at https://www.googleapis.com/youtube/v3/search
+  
+  
 })
 
 // router.get('/newPlaylist', async(req, res) => {
