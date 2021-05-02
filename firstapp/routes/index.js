@@ -13,8 +13,8 @@ scopes = 'user-read-private user-read-email playlist-modify-public playlist-modi
 var myCode = ""; // google return url thing
 var googleAPIKey = '' //your google api key
 
-var client_id = "701543701254-18brjpn5lc3mr8m8hmtr8ql8fkcl9p3a.apps.googleusercontent.com"; // Your client id
-var client_secret = "zUnUpV1D9fN9fpPh52_yCTBY"; // Your secret
+var client_id = ""; // Your client id
+var client_secret = ""; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
 var stateKey = 'spotify_auth_state';
