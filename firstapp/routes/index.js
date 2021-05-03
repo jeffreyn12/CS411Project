@@ -8,10 +8,11 @@ const urlParse = require("url-parse");
 const queryParse = require("query-string");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const { response } = require('express');
 scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private';
 
-var myCode = ""; // google return url thing
-var googleAPIKey = '' //your google api key
+var myToken; // google return url thing
+var googleAPIKey = "" //your google api key
 
 var client_id = ""; // Your client id
 var client_secret = ""; // Your secret
@@ -228,28 +229,9 @@ router.get('/loginYoutube', (req, res) => {
     console.log("statusCode: ", response && response.statusCode);
     res.redirect(url);
   })
-  //youtube=true; // replace with actual login thing later
-  // res.render('index', {
-  //   youtube, 
-  //   spotify, 
-  //   apple, 
-  // atleastonelogin});
 });
 
-// router.get('/getArtists', async(req, res) => {
-//   res.redirect('http://localhost:8888/artists')
-// })
-
 router.get('/artists', async (req, res) => {
-  const theURL = new urlParse(req.url);
-  const code = queryParse.parse(theURL.query).code;
-  myCode = code;
-
-  res.render('artists');
-})
-
-router.post('/newPlaylist', async (req, res) => {
-  console.log(req.body.artist1);
   const oauth2Client = new google.auth.OAuth2(
     //client id
     client_id,
@@ -258,54 +240,20 @@ router.post('/newPlaylist', async (req, res) => {
     //link to redirect to
     "http://localhost:8888/artists"
   )
-  //const tokens = await oauth2Client.getToken(myCode); // the token we need is tokens.tokens.access_token. Use it in header like headers: { authorization: "Bearer " + tokens.tokens.access_token}
-  // console.log(tokens);
-  res.render('newPlaylist');
-  //create function that takes user inputs and calls google api at https://www.googleapis.com/youtube/v3/search
-  
-  
+
+  const theURL = new urlParse(req.url);
+  const code = queryParse.parse(theURL.query).code;
+  const tokens = await oauth2Client.getToken(code); 
+  myToken = tokens.tokens.access_token;
+  res.render('artists');
 })
 
-// router.get('/newPlaylist', async(req, res) => {
-
-// })
-
-// router.get('/loginSpotify', (req,res) => {
-//   var state = generateRandomString(16);
-//   res.redirect('https://accounts.spotify.com/authorize?' +
-//   querystring.stringify({
-//     response_type: 'code',
-//     client_id: client_id,
-//     scope: scopes,
-//     redirect_uri: redirect_uri,
-//     state: state
-//   }));
-// });
-
-// router.get('/getNewPlaylist', async (req,res) => {
-
-//   var options = {
-//     method: "POST",
-//     url:  'https://api.spotify.com/v1/users/' + userspotifyid + '/playlists',
-//     headers: { 'Authorization': 'Bearer ' + spotifytoken },
-//     json: true,
-//     body: {
-//         "description": "recommended songs",
-//         "public": true,
-//         "name": "Generated Playlist"
-//       } 
-//   };
-//   console.log(options)
-
-//   request(options, function (error, response) {
-//     if (error) throw new Error(error);
-//     console.log(response.body.id);
-//     spotifygenplaylistid = response.body.id;
-//     console.log(spotifyrec);
-//     addTracksToPlaylist(spotifygenplaylistid, spotifyrec);
-//     res.status(200).send("Check Spotify account for new Playlist");
-//   });
-// });
+router.post('/newPlaylist', (req, res) => {
+  var artists = req.body.artist1;
+  console.log(myToken);
+  findArtistVideo(artists, myToken);
+  res.render('newPlaylist');
+})
 
 function createNewPlaylistOnSpotify(spotifyid, token, addTracksToPlaylist){
   var options = {
@@ -330,10 +278,6 @@ function createNewPlaylistOnSpotify(spotifyid, token, addTracksToPlaylist){
 
 }
 
-
-
-
-
 function addTracksToPlaylist(playlistId, uris){
   var options = {
     method: "POST",
@@ -348,5 +292,90 @@ function addTracksToPlaylist(playlistId, uris){
 })
 };
 
+function findArtistVideo(artists, token) {
+  var videoId = ""
+  var options = {
+    method: "GET",
+    url: `https://www.googleapis.com/youtube/v3/search?q=${artists}&part=snippet&key=${googleAPIKey}&type=video`,
+    json: true
+  }
+  request(options, function(error, response) {
+    if(error) throw new Error(error);
+    videoId = response.body.items[0].id.videoId;
+    findRelatedVideos(videoId, token);
+  })
+  
+}
+
+function findRelatedVideos(videoId, token) {
+  videoIds = []
+  var options = {
+    method: "GET",
+    url: `https://www.googleapis.com/youtube/v3/search?part=snippet&key=${googleAPIKey}&type=video&relatedToVideoId=${videoId}&maxResults=10`,
+    json: true
+  }
+  request(options, function(error, response) {
+    if(error) throw new Error(error);
+    var i;
+    for(i = 0; i < 10; i++) {
+      videoIds.push(response.body.items[i].id.videoId)
+    }
+    console.log(videoIds)
+    createNewPlaylist(videoIds, token);
+  })
+}
+
+function createNewPlaylist(videoIds, token) {
+  console.log(token);
+  var options = {
+    method: "POST",
+    url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet,status`,
+    headers: { 'Authorization': 'Bearer ' + token },
+    body: {
+      "snippet": {
+        "title": "Recommended Playlist based on Artist",
+        "defaultLanguage": "en"
+      },
+      "status": {
+        "privacyStatus": "private"
+      }
+    },
+    json: true
+  }
+  request(options, function(error, response) {
+    if(error) throw new Error(error);
+    var playlistId = response.body.id;
+    console.log(playlistId);
+    addSongsToPlaylist(playlistId, videoIds, token);
+  })
+}
+
+function addSongsToPlaylist(playlistId, videoIds, token) {
+  console.log("in addsongstoplaylist");
+  console.log(token);
+  var i;
+  for(i=0; i < 10; i++) {
+    var options = {
+      method: "POST",
+      url: `https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet`,
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: {
+        "snippet": {
+          "playlistId": playlistId,
+          "position": i,
+          "resourceId": {
+            "kind": "youtube#video",
+            "videoId": videoIds[i]
+          }
+        }
+      },
+      json: true
+    }
+    request(options, function(error, response) {
+      if(error) throw new Error(error);
+      console.log(response.body);
+    })
+  }
+}
 
 module.exports = router;

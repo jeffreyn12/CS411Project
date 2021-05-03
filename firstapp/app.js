@@ -40,36 +40,4 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-// app.get('/loginYoutube', (req, res) => {
-//     const oauth2Client = new google.auth.OAuth2(
-//       //client id
-//       "701543701254-18brjpn5lc3mr8m8hmtr8ql8fkcl9p3a.apps.googleusercontent.com",
-//       //client secret
-//       "zUnUpV1D9fN9fpPh52_yCTBY",
-//       //link to redirect to
-//       "http://localhost:8888/getArtists"
-//     )
-//     const googleScopes = [ "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/youtube"]
-//     const url = oauth2Client.generateAuthUrl({
-//       access_type: "offline",
-//       scope: googleScopes,
-//       state: JSON.stringify({
-//         callbackUrl: req.body.callbackUrl,
-//         userID: req.body.userid
-//       })
-//     })
-  
-//     request(url, (err, response, body) => {
-//       console.log("error: ", err);
-//       console.log("statusCode: ", response && response.statusCode);
-//       res.send({url});
-//     })
-//     //youtube=true; // replace with actual login thing later
-//     // res.render('index', {
-//     //   youtube, 
-//     //   spotify, 
-//     //   apple, 
-//     // atleastonelogin});
-//   });
-
 app.listen(PORT,() => console.log(`Server started on port ${PORT}`));
