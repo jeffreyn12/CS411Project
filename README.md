@@ -7,7 +7,7 @@ This is the project repository for the course project in the Spring 2021 iterati
 This web application seeks to automate the process of finding new music on a specified platforms based on User 
 preferences.
 
-## Team members
+## Team members (Team 16)
 * [Julian Maldonado](https://github.com/julianhm-cs)
 * [Jeffrey N](https://github.com/jeffreyn12/)
 * [Melc](https://github.com/melcbos)
@@ -30,7 +30,7 @@ preferences.
 * [Spotify](https://developer.spotify.com/web-api/)
 * [YouTube Data API v3](https://developers.google.com/youtube/v3/)
 
-## Running the appication 
+## Running the application 
 
 To run the application, start up the server, 'app.js' and go to local host on port 8888. Once here you should be able
 to see the application as well as buttons where you can select the platform that you want your playlist generated. 
