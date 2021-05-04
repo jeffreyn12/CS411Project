@@ -18,6 +18,9 @@ var client_id = ""; // Your client id
 var client_secret = ""; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
+var google_client_id = "";
+var google_client_secret = "";
+
 var stateKey = 'spotify_auth_state';
 
 var youtube = false; 
@@ -208,9 +211,9 @@ router.get('/spotifyrecfromtrack', (req, res) => {
 router.get('/loginYoutube', (req, res) => {
   const oauth2Client = new google.auth.OAuth2(
     //client id
-    client_id,
+    google_client_id,
     //client secret
-    client_secret,
+    google_client_secret,
     //link to redirect to
     "http://localhost:8888/artists"
   )
@@ -234,9 +237,9 @@ router.get('/loginYoutube', (req, res) => {
 router.get('/artists', async (req, res) => {
   const oauth2Client = new google.auth.OAuth2(
     //client id
-    client_id,
+    google_client_id,
     //client secret
-    client_secret,
+    google_client_secret,
     //link to redirect to
     "http://localhost:8888/artists"
   )
