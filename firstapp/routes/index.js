@@ -12,14 +12,14 @@ const { response } = require('express');
 scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private';
 
 var myToken; // google return url thing
-var googleAPIKey = "AIzaSyCmGbRijfbuSIH59K7oflVKk_Bd9XZlC1s" //your google api key
+var googleAPIKey = "" //your google api key
 
-var client_id = "888951865dc9480b9b557496352e27d9"; // Your client id
-var client_secret = "e07fdde03a8546e1980c89de8478a43a"; // Your secret
+var client_id = ""; // Your client id
+var client_secret = ""; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
-var google_client_id = "701543701254-18brjpn5lc3mr8m8hmtr8ql8fkcl9p3a.apps.googleusercontent.com";
-var google_client_secret = "xhm84WlmUYS9dvK7OnarwUgh";
+var google_client_id = "";
+var google_client_secret = "";
 
 var stateKey = 'spotify_auth_state';
 
